@@ -1,0 +1,68 @@
+
+#include<stdio.h>
+void main()
+{
+    int n, i, j;
+    printf("Enter the number of processes:");
+    scanf("%d",&n);
+    int P[n], AT[n], BT[n], CT[n], TAT[n], WT[n], comp[n];
+        int curr=0;
+        int completed =0;
+     double  atat=0;
+      double awt=0;
+    for(i=0;i<n;i++)
+    { comp[i]=0;
+        printf("Enter the process id, arrival time and burst time: ");
+        scanf("%d%d%d",&P[i],&AT[i],&BT[i]);
+
+    }
+
+
+
+while(completed < n)
+    {
+        int idx=-1;
+        int minBT=9999;
+
+        for(i=0;i<n;i++)
+        {
+            if(AT[i]<=curr && comp[i]==0)
+            {
+                if(BT[i] < minBT)
+                {
+                    minBT=BT[i];
+                    idx=i;
+                }
+            }
+        }
+
+        if(idx==-1)
+        {
+            curr++;
+        }
+        else
+        {
+            CT[idx]=curr+BT[idx];
+            TAT[idx]=CT[idx]-AT[idx];
+            WT[idx]=TAT[idx]-BT[idx];
+
+            comp[idx]=1;
+            curr=CT[idx];
+            completed++;
+
+            atat+=TAT[idx];
+            awt+=WT[idx];
+        }
+    }
+
+
+    printf("Process_id AT BT CT TAT WT\n");
+   for (i=0;i<n;i++)
+   {
+       printf("%d\t%d\t%d\t%d\t%d\t%d\n",P[i],AT[i],BT[i],CT[i],TAT[i],WT[i]);
+
+       }
+       printf("average tat %lf\n", (atat/n));
+         printf("average wt %lf\n", (awt/n));
+
+       }
