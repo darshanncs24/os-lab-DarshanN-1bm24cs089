@@ -1,0 +1,70 @@
+#include<stdio.h>
+
+int main()
+{
+    int n,cur=0,completed=0,b;
+    double swt=0,stat=0;
+
+    printf("Enter total number of processes: ");
+    scanf("%d",&n);
+
+    int pid[n],at[n],bt[n],rt[n],ct[n],wt[n],tat[n];
+
+    for(int i=0;i<n;i++)
+    {
+        printf("Enter arrival time, burst time and process id: ");
+        scanf("%d%d%d",&at[i],&bt[i],&pid[i]);
+        rt[i]=bt[i];
+    }
+
+    while(completed<n)
+    {
+        b=-1;
+
+        for(int i=0;i<n;i++)
+        {
+            if(at[i]<=cur && rt[i]>0)
+            {
+                if(b==-1 || rt[i]<rt[b])
+                {
+                    b=i;
+                }
+            }
+        }
+
+        if(b==-1)
+        {
+            cur++;
+        }
+        else
+        {
+            rt[b]--;
+            cur++;
+
+            if(rt[b]==0)
+            {
+                completed++;
+
+                ct[b]=cur;
+                tat[b]=ct[b]-at[b];
+                wt[b]=tat[b]-bt[b];
+
+                swt+=wt[b];
+                stat+=tat[b];
+            }
+        }
+    }
+
+    printf("Process_id\tAT\tBT\tCT\tWT\tTAT\n");
+
+    for(int i=0;i<n;i++)
+    {
+        printf("%d\t\t%d\t%d\t%d\t%d\t%d\n",
+        pid[i],at[i],bt[i],ct[i],wt[i],tat[i]);
+    }
+
+    printf("Average Waiting Time: %lf\n",swt/n);
+    printf("Average Turnaround Time: %lf\n",stat/n);
+
+    return 0;
+}
