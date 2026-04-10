@@ -1,0 +1,71 @@
+#include <stdio.h>
+
+struct process {
+    int pid;
+    int arrival_time;
+    int burst_time;
+    int completion_time;
+    int waiting_time;
+    int turnaround_time;
+    int type; // 0 = system, 1 = user
+};
+
+void fcfs(struct process p[], int n, int *ct) {
+    for (int i = 0; i < n; i++) {
+        if (*ct < p[i].arrival_time) {
+            *ct = p[i].arrival_time;
+        }
+        p[i].completion_time = *ct + p[i].burst_time;
+        p[i].turnaround_time = p[i].completion_time - p[i].arrival_time;
+        p[i].waiting_time = p[i].turnaround_time - p[i].burst_time;
+        *ct = p[i].completion_time;
+    }
+}
+
+void display(struct process p[], int n) {
+    printf("\nPID\tType\tArrival\tBurst\tCompletion\tWaiting\tTurnaround\n");
+    int awt=0,atat=0;
+    for (int i = 0; i < n; i++) {
+        printf("%d\t%s\t%d\t%d\t%d\t\t%d\t%d\n",
+               p[i].pid,
+               p[i].type == 0 ? "System" : "User",
+               p[i].arrival_time,
+               p[i].burst_time,
+               p[i].completion_time,
+               p[i].waiting_time,
+               p[i].turnaround_time);
+               awt+=p[i].waiting_time;
+               atat+=p[i].turnaround_time;
+    }
+    printf("Average Waiting time: %d\n Average Turnaround time: %d\n",awt,atat);
+}
+
+int main() {
+    int n, ct = 0;
+    printf("Enter total number of processes: ");
+    scanf("%d", &n);
+
+    struct process p[n];
+    for (int i = 0; i < n; i++) {
+        printf("Enter arrival time, burst time, and type (0=System, 1=User) for process %d: ", i + 1);
+        scanf("%d %d %d", &p[i].arrival_time, &p[i].burst_time, &p[i].type);
+        p[i].pid = i + 1;
+    }
+
+    for (int i = 0; i < n - 1; i++) {
+        for (int j = 0; j < n - i - 1; j++) {
+            if (p[j].type > p[j + 1].type ||
+               (p[j].type == p[j + 1].type && p[j].arrival_time > p[j + 1].arrival_time)) {
+                struct process temp = p[j];
+                p[j] = p[j + 1];
+                p[j + 1] = temp;
+            }
+        }
+    }
+
+    fcfs(p, n, &ct);
+    display(p, n);
+
+    return 0;
+}
+
