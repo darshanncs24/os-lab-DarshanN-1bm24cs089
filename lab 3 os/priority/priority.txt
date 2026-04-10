@@ -1,0 +1,124 @@
+#include<stdio.h>
+
+struct a
+{
+    int pid;
+    int at;
+    int bt;
+    int ct;
+    int wt;
+    int tat;
+};
+
+int main()
+{
+    int n, cur = 0, completed = 0;
+    double swt = 0, stat = 0;
+    int c; // menu choice
+
+    printf("Enter total number of processes: ");
+    scanf("%d",&n);
+
+    int rem[n], pr[n];
+    struct a p[n];
+
+    for(int i=0;i<n;i++)
+    {
+        printf("Enter arrival time, burst time, priority and process id: ");
+        scanf("%d%d%d%d", &p[i].at, &p[i].bt, &pr[i], &p[i].pid);
+        rem[i] = p[i].bt;
+    }
+
+    printf("Non-Preemptive->1\nPreemptive->2\n");
+    scanf("%d", &c);
+
+    switch(c)
+    {
+        case 1:
+        {
+            int done[n];
+            for(int i=0;i<n;i++) done[i] = 0;
+
+            while(completed < n)
+            {
+                int s = -1;
+
+                for(int j=0;j<n;j++)
+                {
+                    if(p[j].at <= cur && !done[j])
+                    {
+                        if(s == -1 || pr[j] < pr[s])
+                            s = j;
+                    }
+                }
+
+                if(s==-1)
+                    cur++;
+                else
+                {
+                    cur += p[s].bt;
+                    p[s].ct = cur;
+                    p[s].tat = p[s].ct - p[s].at;
+                    p[s].wt = p[s].tat - p[s].bt;
+                    swt += p[s].wt;
+                    stat += p[s].tat;
+                    done[s] = 1;
+                    completed++;
+                }
+            }
+            break;
+        }
+
+        case 2:
+        {
+            while(completed < n)
+            {
+                int executed = 0, s = -1;
+
+                for(int j=0;j<n;j++)
+                {
+                    if(p[j].at <= cur && rem[j] > 0)
+                    {
+                        if(s == -1 || pr[j] < pr[s])
+                            s = j;
+                        executed = 1;
+                    }
+                }
+
+                if(executed)
+                {
+                    rem[s]--;
+                    cur++;
+
+                    if(rem[s] == 0)
+                    {
+                        completed++;
+                        p[s].ct = cur;
+                        p[s].tat = p[s].ct - p[s].at;
+                        p[s].wt = p[s].tat - p[s].bt;
+                        swt += p[s].wt;
+                        stat += p[s].tat;
+                    }
+                }
+                else
+                    cur++;
+            }
+            break;
+        }
+
+        default:
+            printf("Invalid Input\n");
+    }
+
+    printf("Process_id\tAT\tBT\tPriority\tCT\tWT\tTAT\n");
+    for(int i=0;i<n;i++)
+    {
+        printf("%d\t\t%d\t%d\t%d\t\t%d\t%d\t%d\n",
+               p[i].pid, p[i].at, p[i].bt, pr[i], p[i].ct, p[i].wt, p[i].tat);
+    }
+
+    printf("Average Waiting Time: %lf\n", swt/n);
+    printf("Average Turnaround Time: %lf\n", stat/n);
+
+    return 0;
+}

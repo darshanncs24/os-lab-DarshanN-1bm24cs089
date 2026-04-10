@@ -1,0 +1,82 @@
+#include<stdio.h>
+
+struct a
+{
+    int pid;
+    int at;
+    int bt;
+    int ct;
+    int wt;
+    int tat;
+};
+
+int main()
+{
+    int n,cur=0,completed=0,q;
+    double swt=0,stat=0;
+
+    printf("Enter total number of processes: ");
+    scanf("%d",&n);
+    printf("Enter Quant Time: ");
+    scanf("%d",&q);
+    int rem[n];
+    struct a p[n];
+
+    for(int i=0;i<n;i++)
+    {
+        printf("Enter arrival time, burst time and process id: ");
+        scanf("%d%d%d",&p[i].at,&p[i].bt,&p[i].pid);
+        rem[i]=p[i].bt;
+    }
+
+    while(completed<n)
+    {
+        int executed = 0;
+
+        for(int i = 0; i < n; i++)
+        {
+            if(p[i].at <= cur && rem[i] > 0)
+            {
+                executed = 1;
+
+                if(rem[i] > q)
+                {
+                    cur += q;
+                    rem[i] -= q;
+                }
+                else
+                {
+                    cur += rem[i];
+                    rem[i] = 0;
+
+                    completed++;
+
+                    p[i].ct = cur;
+                    p[i].tat = p[i].ct - p[i].at;
+                    p[i].wt = p[i].tat - p[i].bt;
+
+                    swt += p[i].wt;
+                    stat += p[i].tat;
+                }
+            }
+        }
+
+        if(executed == 0)
+            cur++;
+
+        }
+
+
+    printf("Process_id\tAT\tBT\tCT\tWT\tTAT\n");
+
+    for(int i=0;i<n;i++)
+    {
+        printf("%d\t\t%d\t%d\t%d\t%d\t%d\n",
+        p[i].pid,p[i].at,p[i].bt,p[i].ct,p[i].wt,p[i].tat);
+    }
+
+    printf("Average Waiting Time: %lf\n",swt/n);
+    printf("Average Turnaround Time: %lf\n",stat/n);
+
+    return 0;
+}
